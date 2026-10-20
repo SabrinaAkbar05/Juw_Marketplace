@@ -53,14 +53,16 @@ node_modules
 dist
 ```
 
-### Initializing Git (if not already done)
+### Initializing Git & Pushing to GitHub
 ```bash
-git init
-git add .
-git commit -m "feat: prepare full-stack JUW Marketplace for Netlify deployment"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-git push -u origin main
+# Push latest commit containing bundling and credential fixes:
+git push origin main
+
+# NOTE: If Netlify Secret Scanner flags earlier commit history:
+# Squash into a single clean commit and force push:
+git reset --soft HEAD~1
+git commit -m "feat: complete full-stack JUW Marketplace for Netlify deployment"
+git push -f origin main
 ```
 
 ---
