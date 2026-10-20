@@ -9,29 +9,36 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const serverDir = path.resolve(__dirname, '..');
 
-// Load environment variables
-const envPath = path.resolve(serverDir, '.env');
-const envContent = fs.readFileSync(envPath, 'utf8');
-for (const line of envContent.split('\n')) {
-  const trimmed = line.trim();
-  if (trimmed && !trimmed.startsWith('#')) {
-    const eq = trimmed.indexOf('=');
-    if (eq !== -1) {
-      const k = trimmed.slice(0, eq).trim();
-      let v = trimmed.slice(eq + 1).trim();
-      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-      process.env[k] = v;
+// Load environment variables from server/.env and root .env
+function loadEnv(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const eq = trimmed.indexOf('=');
+      if (eq !== -1) {
+        const k = trimmed.slice(0, eq).trim();
+        let v = trimmed.slice(eq + 1).trim();
+        if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+        if (!process.env[k]) process.env[k] = v;
+      }
     }
   }
 }
+loadEnv(path.resolve(serverDir, '.env'));
+loadEnv(path.resolve(serverDir, '..', '.env'));
 
-const serviceAccountPath = path.resolve(serverDir, process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
+const serviceAccountPath = path.resolve(serverDir, process.env.FIREBASE_SERVICE_ACCOUNT_PATH || 'firebase-service-account.json');
 initializeApp({ credential: cert(JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'))) });
 
 const auth = getAuth();
 const db = getFirestore();
 const targetUid = 'AiBU3zLcpXWPM4osYn2kFnpPt7l2';
-const apiKey = 'AIzaSyDeyozJYeh8DQN-yehy0mihkPtrdQii1UY';
+const apiKey = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY || process.env.FIREBASE_WEB_API_KEY;
+if (!apiKey) {
+  throw new Error('Missing Firebase Web API Key. Please define VITE_FIREBASE_API_KEY or FIREBASE_API_KEY in your .env or environment.');
+}
 
 async function runTests() {
   console.log('--- RUNNING SUPER ADMIN INTEGRATION TESTS ---\n');

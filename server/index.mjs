@@ -4,10 +4,10 @@ import { createProductRepository } from './firestore-products.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 
-const directory = path.dirname(fileURLToPath(import.meta.url));
+// Determine server base directory safely without import.meta.url for bundler compatibility
+const serverDir = path.resolve(process.cwd(), fs.existsSync(path.resolve(process.cwd(), 'server')) ? 'server' : '.');
 
 const defaultOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'];
 const envOrigins = (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || '')
@@ -99,7 +99,11 @@ async function initializeFirebase() {
 
   // 4. File path on disk (local development fallback)
   if (!credential && process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
-    const fullPath = path.resolve(directory, process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
+    const fullPath = path.isAbsolute(process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+      ? process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+      : (fs.existsSync(path.resolve(process.cwd(), process.env.FIREBASE_SERVICE_ACCOUNT_PATH))
+          ? path.resolve(process.cwd(), process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
+          : path.resolve(serverDir, process.env.FIREBASE_SERVICE_ACCOUNT_PATH));
     if (fs.existsSync(fullPath)) {
       credential = cert(JSON.parse(fs.readFileSync(fullPath, 'utf8')));
     }
@@ -2081,14 +2085,27 @@ async function handler(req, res) {
 
 // Start standalone local server when executed directly (not in Netlify / Lambda serverless environment or when imported)
 const isServerless = !!(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
-const isMain = Boolean(process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url));
+const isMain = Boolean(
+  typeof process !== 'undefined' &&
+  process.argv[1] &&
+  /[/\\]server[/\\]index\.mjs$/i.test(process.argv[1])
+);
 
 const port = Number(process.env.PORT || 4000);
 const app = http.createServer(handler);
 
-if (isMain && !isServerless && process.env.NODE_ENV !== 'test') {
-  await getOrInitApp();
-  app.listen(port, () => console.log(`JUW API listening on ${port}; Firebase configured: ${!!firebaseAuth}`));
+// Async server startup without top-level await for bundler compatibility
+async function startStandaloneServer() {
+  try {
+    await getOrInitApp();
+    app.listen(port, () => console.log(`JUW API listening on ${port}; Firebase configured: ${!!firebaseAuth}`));
+  } catch (err) {
+    console.error('Failed to start standalone JUW API server:', err);
+  }
 }
 
-export { app, handler, getOrInitApp, initializeFirebase, ensureDefaultCategories };
+if (isMain && !isServerless && process.env.NODE_ENV !== 'test') {
+  startStandaloneServer();
+}
+
+export { app, handler, getOrInitApp, initializeFirebase, ensureDefaultCategories, startStandaloneServer };

@@ -12,6 +12,7 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["server/**"]
+  external_node_modules = ["firebase-admin", "cloudinary"]
 
 # 1. API Route Rewrites (MUST take precedence over SPA fallback)
 # Routes all frontend /api/* calls directly to the serverless function

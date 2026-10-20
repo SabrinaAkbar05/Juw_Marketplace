@@ -4,11 +4,47 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
-const API_BASE = 'http://localhost:4000';
-const FIREBASE_API_KEY = 'AIzaSyDeyozJYeh8DQN-yehy0mihkPtrdQii1UY';
+function loadEnv(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const eq = trimmed.indexOf('=');
+      if (eq !== -1) {
+        const k = trimmed.slice(0, eq).trim();
+        let v = trimmed.slice(eq + 1).trim();
+        if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+        if (!process.env[k]) process.env[k] = v;
+      }
+    }
+  }
+}
+loadEnv(path.resolve('.env'));
+loadEnv(path.resolve('..', '.env'));
+loadEnv(path.resolve('server', '.env'));
+
+const API_BASE = process.env.API_BASE || 'http://localhost:4000';
+const FIREBASE_API_KEY = process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY || process.env.FIREBASE_WEB_API_KEY;
+if (!FIREBASE_API_KEY) {
+  throw new Error('Missing Firebase Web API Key. Please define VITE_FIREBASE_API_KEY or FIREBASE_API_KEY in your .env or environment.');
+}
 
 // 1. Initialize Firebase Admin
-const cred = cert(JSON.parse(fs.readFileSync('./firebase-service-account.json', 'utf8')));
+const saPath = [
+  './firebase-service-account.json',
+  './server/firebase-service-account.json',
+  path.resolve('server', 'firebase-service-account.json'),
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
+].find(p => p && fs.existsSync(p));
+
+const cred = saPath
+  ? cert(JSON.parse(fs.readFileSync(saPath, 'utf8')))
+  : (process.env.FIREBASE_SERVICE_ACCOUNT_KEY ? cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)) : null);
+
+if (!cred) {
+  throw new Error('Firebase service account credentials not found. Please provide firebase-service-account.json or set FIREBASE_SERVICE_ACCOUNT_KEY.');
+}
 const adminApp = initializeApp({ credential: cred }, 'test-runner-' + Date.now());
 const auth = getAuth(adminApp);
 const db = getFirestore(adminApp);
