@@ -1,0 +1,274 @@
+/* ─── Elevator Stage ─── */
+.elevator-stage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--surface-0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  overflow: hidden;
+}
+
+/* Background grid */
+.elevator-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.elevator-stage__label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--juw-gold);
+  opacity: 0.7;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+/* ─── Elevator Wrapper ─── */
+.elevator-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Cable */
+.elevator__cable {
+  width: 3px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--juw-gold), var(--elevator-steel));
+  margin-bottom: 0;
+  position: relative;
+}
+
+.elevator__cable::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  background: var(--juw-gold);
+  border-radius: 2px;
+}
+
+/* ─── Elevator Car ─── */
+.elevator {
+  position: relative;
+  width: min(380px, 90vw);
+  aspect-ratio: 0.75;
+  background: var(--elevator-steel);
+  border: 2px solid rgba(201, 168, 76, 0.3);
+  border-radius: var(--radius-md) var(--radius-md) 6px 6px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(201, 168, 76, 0.1),
+    0 20px 80px rgba(0, 0, 0, 0.8),
+    0 0 60px rgba(139, 26, 26, 0.1),
+    inset 0 1px 0 rgba(201, 168, 76, 0.2);
+}
+
+/* Gold trim top */
+.elevator::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--juw-gold), transparent);
+  z-index: 20;
+}
+
+/* Interior back wall */
+.elevator__interior {
+  position: absolute;
+  inset: 0;
+  background: var(--elevator-door-inner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Closed state prompt */
+.elevator__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.elevator__prompt.visible {
+  opacity: 1;
+}
+
+/* ─── Doors ─── */
+.elevator__doors {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 10;
+}
+
+.elevator__door {
+  flex: 1;
+  background: var(--elevator-door);
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+}
+
+.elevator__door--left {
+  border-right: 1px solid rgba(201, 168, 76, 0.15);
+}
+.elevator__door--right {
+  border-left: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+/* Door panel details */
+.elevator__door::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(201, 168, 76, 0.08);
+  border-radius: 2px;
+}
+
+.elevator__door::after {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(201, 168, 76, 0.04);
+  border-radius: 1px;
+}
+
+/* Door brushed metal texture */
+.elevator__door-texture {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.012) 3px,
+    rgba(255,255,255,0.012) 4px
+  );
+}
+
+/* Door handle strip */
+.elevator__door-handle {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--juw-gold-dim), var(--juw-gold), var(--juw-gold-dim));
+  border-radius: 2px;
+}
+
+.elevator__door--left .elevator__door-handle { right: 6px; }
+.elevator__door--right .elevator__door-handle { left: 6px; }
+
+/* ─── Floor Indicator (above elevator) ─── */
+.elevator__indicator {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  background: rgba(0,0,0,0.8);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 6px;
+  padding: 0.25rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.elevator__indicator-num {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--juw-gold);
+  min-width: 2ch;
+  text-align: center;
+}
+
+.elevator__indicator-dir {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+/* ─── Open Button ─── */
+.elevator__open-btn {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 100px;
+  padding: 0.7rem 1.8rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--juw-gold);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.elevator__open-btn:hover {
+  background: var(--juw-gold);
+  color: #000;
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.4);
+}
+
+/* Shaft base */
+.elevator__shaft-base {
+  width: calc(min(380px, 90vw) + 40px);
+  height: 16px;
+  background: linear-gradient(to bottom, var(--elevator-steel), #000);
+  border-radius: 0 0 8px 8px;
+  position: relative;
+}
+
+.elevator__shaft-base::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10px; right: 10px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--juw-gold-dim), transparent);
+}
+
+/* ─── Panel (inside elevator, revealed when doors open) ─── */
+.elevator__panel-container {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #0d0d0d 0%, #111 100%);
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .elevator { width: 90vw; }
+}

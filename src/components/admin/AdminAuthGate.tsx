@@ -1,0 +1,12 @@
+import React,{useState} from 'react';
+import {adminToken,firebasePasswordLogin} from '../../lib/auth';
+import {adminApi} from '../../lib/api';
+export function AdminAuthGate({children}:{children:React.ReactNode}){
+ const [token,setToken]=useState(adminToken);
+ const [email,setEmail]=useState('');const [password,setPassword]=useState('');
+ const [error,setError]=useState('');const [busy,setBusy]=useState(false);
+ const [verified,setVerified]=useState(false);
+ React.useEffect(()=>{if(token)adminApi('/bootstrap',token).then(()=>setVerified(true)).catch((e)=>{setError(e.message);setVerified(false);});},[token]);
+ if(verified)return <>{children}</>;
+ return <main className="min-h-screen bg-[#f6f6f0] flex items-center justify-center p-5"><div className="bg-white rounded-3xl shadow-xl border border-slate-100 w-full max-w-md p-8 space-y-5"><img src="/juw-logo.png" alt="JUW" className="w-16 h-16 object-contain"/><div><p className="text-emerald-800 uppercase tracking-widest text-xs font-bold">Secure administration</p><h1 className="text-3xl font-bold text-slate-900 mt-2">JUW Marketplace</h1><p className="text-slate-500 mt-2 text-sm">Sign in with your authorized Firebase admin account to manage orders and products.</p></div><form onSubmit={async(e)=>{e.preventDefault();setBusy(true);setError('');try{const t=await firebasePasswordLogin(email,password);await adminApi('/bootstrap',t);setToken(t);setVerified(true);}catch(err){setError(err instanceof Error?err.message:'Sign-in failed');sessionStorage.removeItem('juw_firebase_token');}finally{setBusy(false)}}} className="space-y-4"><label className="block text-sm font-semibold">Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3" autoComplete="username"/></label><label className="block text-sm font-semibold">Password<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3" autoComplete="current-password"/></label>{error&&<p className="text-red-600 text-sm" role="alert">{error}</p>}<button disabled={busy} className="rounded-xl bg-emerald-800 text-white w-full py-3 font-semibold disabled:opacity-60">{busy?'Verifying…':'Sign in securely'}</button></form><p className="text-xs text-slate-500">Only Firebase users whose UID is on the backend admin allowlist can access this portal.</p></div></main>;
+}

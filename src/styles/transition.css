@@ -1,0 +1,181 @@
+/* ─── Floor Transition Overlay ─── */
+.floor-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #080808;
+  pointer-events: all;
+  overflow: hidden;
+}
+
+/* Moving floor stripes in shaft */
+.floor-transition__shaft {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.floor-transition__stripe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
+  animation: shaftStripe 0.4s linear infinite;
+}
+
+@keyframes shaftStripe {
+  from { top: -10px; }
+  to   { top: 105%; }
+}
+
+/* Side textured walls */
+.floor-transition__wall {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(201, 168, 76, 0.04) 0px,
+    rgba(201, 168, 76, 0.04) 2px,
+    transparent 2px,
+    transparent 24px
+  );
+  z-index: 2;
+}
+
+.floor-transition__wall--left  { left: 0; border-right: 1px solid rgba(255, 255, 255, 0.05); }
+.floor-transition__wall--right { right: 0; border-left: 1px solid rgba(255, 255, 255, 0.05); }
+
+/* Center Display */
+.floor-transition__content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Direction Arrow */
+.floor-transition__arrow {
+  font-size: 2.2rem;
+  color: var(--juw-gold);
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(201, 168, 76, 0.6);
+}
+
+.floor-transition__arrow.going-up {
+  animation: bounceUp 0.35s ease-in-out infinite alternate;
+}
+
+.floor-transition__arrow.going-down {
+  animation: bounceDown 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes bounceUp {
+  from { transform: translateY(0); opacity: 0.5; }
+  to   { transform: translateY(-10px); opacity: 1; }
+}
+
+@keyframes bounceDown {
+  from { transform: translateY(0); opacity: 0.5; }
+  to   { transform: translateY(10px); opacity: 1; }
+}
+
+/* Digital Floor Number */
+.floor-transition__counter {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(5.5rem, 16vw, 11rem);
+  font-weight: 800;
+  color: var(--juw-gold);
+  line-height: 0.9;
+  text-shadow: 0 0 50px rgba(201, 168, 76, 0.5), 0 0 100px rgba(201, 168, 76, 0.2);
+  position: relative;
+  min-width: 2.5ch;
+}
+
+.floor-transition__counter-label {
+  position: absolute;
+  top: -1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 240, 0.5);
+  white-space: nowrap;
+}
+
+.floor-transition__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.floor-transition__dest {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.35rem 1rem;
+  border-radius: 100px;
+}
+
+.floor-transition__dest strong {
+  color: var(--juw-gold);
+}
+
+/* Sliding Door Panels */
+.floor-transition__door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: var(--elevator-door);
+  z-index: 50;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+}
+
+.floor-transition__door--left {
+  left: 0;
+  border-right: 2px solid rgba(201, 168, 76, 0.3);
+}
+
+.floor-transition__door--right {
+  right: 0;
+  border-left: 2px solid rgba(201, 168, 76, 0.3);
+}
+
+/* Progress Bar */
+.floor-transition__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 100;
+}
+
+.floor-transition__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--juw-maroon), var(--juw-gold));
+  width: 0%;
+  box-shadow: 0 0 10px var(--juw-gold);
+  transition: width 0.1s linear;
+}

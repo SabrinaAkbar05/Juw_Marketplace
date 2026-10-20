@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600;700&display=swap');
+
+/* ─── Design Tokens ─── */
+:root {
+  --juw-maroon: #8B1A1A;
+  --juw-maroon-light: #a52020;
+  --juw-maroon-dark: #5c1111;
+  --juw-gold: #C9A84C;
+  --juw-gold-light: #e8c96a;
+  --juw-gold-dim: rgba(201, 168, 76, 0.3);
+
+  --elevator-steel: #1a1a1a;
+  --elevator-door: #141414;
+  --elevator-door-inner: #0d0d0d;
+  --elevator-trim: #C9A84C;
+  --elevator-button-bg: #1e1e1e;
+  --elevator-button-active: #C9A84C;
+
+  --surface-0: #090909;
+  --surface-1: #0f0f0f;
+  --surface-2: #161616;
+  --surface-3: #1e1e1e;
+  --surface-4: #252525;
+
+  --text-primary: #f5f5f0;
+  --text-secondary: rgba(245, 245, 240, 0.7);
+  --text-dim: rgba(245, 245, 240, 0.4);
+
+  --border: rgba(201, 168, 76, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+
+  --shadow-gold: 0 0 30px rgba(201, 168, 76, 0.2);
+  --shadow-maroon: 0 0 30px rgba(139, 26, 26, 0.3);
+  --shadow-card: 0 8px 40px rgba(0, 0, 0, 0.6);
+
+  --transition-fast: 0.2s ease;
+  --transition-mid: 0.4s ease;
+  --transition-slow: 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  --font-display: 'Cinzel', serif;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-1); }
+::-webkit-scrollbar-thumb { background: var(--juw-gold-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--juw-gold); }
+
+/* ─── Utility ─── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); border: 0;
+}
+
+.gold-text {
+  color: var(--juw-gold);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--juw-gold);
+  opacity: 0.8;
+}
+
+/* ─── Gold Divider ─── */
+.gold-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--juw-gold), transparent);
+  margin: 1rem auto;
+}
